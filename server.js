@@ -127,14 +127,14 @@ app.get("/api/all", function(req, res) {
 // Retrieve data from the savedStroies collection
 app.get("/savedArticles", function(req, res) {
   // Find all results from the scrapedData collection in the db
-  db.savedStories.find({}, function(error, found) {
+  savedArticles.find({}, function(error, docs) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
     }
     // If there are no errors, send the data to the browser as a json
     else {
-      res.render("savedArticles", {stories: found});
+      res.render("savedArticles", {stories: docs});
     }
   });
 });
@@ -149,11 +149,11 @@ app.get("/saveArticle/:id", function(req, res) {
     }
     // Or send the doc to the browser
     else {
-      console.log(doc);
+      console.log(doc[0].title);
       //create a new model from savedArticles.
       var savedArticle = new savedArticles({
-          title: doc.title,
-          link: doc.link
+          title: doc[0].title,
+          link: doc[0].link
       });
       // Save the data in the news db
       savedArticle.save(function(error, doc) {
@@ -174,7 +174,7 @@ app.get("/saveArticle/:id", function(req, res) {
 });
 app.get("/api/delete/:id", function(req, res) {
     //console.log("got inside the delete route");
-    db.savedStories.remove({ "_id": mongojs.ObjectId(req.params.id) 
+    savedArticles.remove({ "_id": req.params.id 
     }, function(error, deleted) {
       if(error) {
         console.log(error);
