@@ -1,0 +1,23 @@
+<h1 class="jumbotron text-center">Scrape your News!</h1>
+
+<div class="container">
+  <div class="row">
+    {{#each stories}}
+      <div class="well">
+        <div style="background-color:cyan">
+          {{this.title}}
+          <button class="btn btn-info" data-id="{{this._id}}">
+            Add Note
+          </button>
+          <button class="btn btn-danger" data-id="{{this._id}}">
+            Delete
+          </button>
+        </div>
+        <br>
+        <a href={{this.link}}>{{this.link}}</a>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+
