@@ -37,7 +37,9 @@ app.set("view engine", "handlebars");
 //app.use(express.static("public"));
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/newsDb");
+//mongoose.connect("mongodb://localhost/newsDb");
+//heroku mlab
+mongoose.connect("mongodb://heroku_l8xm914v:f3s6kq182ul9gpic30a67jkfbe@ds155961.mlab.com:55961/heroku_l8xm914v");
 var db = mongoose.connection;
 
 // Show any mongoose errors
