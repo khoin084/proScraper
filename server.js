@@ -11,7 +11,7 @@ var mongoose = require("mongoose");
 // Bring in our Models
 var Note = require("./models/Note.js");
 var Articles = require("./models/Articles.js");
-var savedArticles = require("./models/SavedArticles.js")
+var SavedArticles = require("./models/SavedArticles.js")
 //========================================================
 var exphbs = require("express-handlebars");
 // Require request and cheerio. This makes the scraping possible
@@ -113,7 +113,7 @@ app.get("/results", function(req, res) {
 // Retrieve data from the db
 app.get("/api/all", function(req, res) {
   // Find all results from the scrapedData collection in the db
-  db.stories.find({}, function(error, found) {
+  Articles.find({}, function(error, found) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
@@ -127,7 +127,7 @@ app.get("/api/all", function(req, res) {
 // Retrieve data from the savedStroies collection
 app.get("/savedArticles", function(req, res) {
   // Find all results from the scrapedData collection in the db
-  savedArticles.find({}, function(error, docs) {
+  SavedArticles.find({}, function(error, docs) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
@@ -141,7 +141,7 @@ app.get("/savedArticles", function(req, res) {
 
 // Route to save an article from the scraped results.
 app.get("/saveArticle/:id", function(req, res) {
-  console.log("*******" + req.params.id);
+  console.log(typeof req.params.id);
   Articles.find({_id: req.params.id}, function(error, doc) {
     // Send any errors to the browser
     if (error) {
@@ -151,7 +151,7 @@ app.get("/saveArticle/:id", function(req, res) {
     else {
       console.log(doc[0].title);
       //create a new model from savedArticles.
-      var savedArticle = new savedArticles({
+      var savedArticle = new SavedArticles({
           title: doc[0].title,
           link: doc[0].link
       });
@@ -166,15 +166,10 @@ app.get("/saveArticle/:id", function(req, res) {
       });
     }
   });
-  // var newSavedArticle = new SavedArticles({
-  //                 title: title,
-  //                 link: link
-  //               });
-  
 });
 app.get("/api/delete/:id", function(req, res) {
     //console.log("got inside the delete route");
-    savedArticles.remove({ "_id": req.params.id 
+    SavedArticles.remove({ "_id": req.params.id 
     }, function(error, deleted) {
       if(error) {
         console.log(error);
@@ -184,9 +179,73 @@ app.get("/api/delete/:id", function(req, res) {
       }
     });
 });
-app.get("/api/updateArticle/:id", function(req, res) {
+// New note creation via POST route
+app.post("/api/addNote", function(req, res) {
+  console.log("*****" + req.body.notes);
+  console.log("*****" + req.body.id);
+  // Use our Note model to make a new note from the req.body
+  var newNote = new Note({body:req.body.notes});
+  // Save the new note to mongoose
+  newNote.save(function(error, doc) {
+    // Send any errors to the browser
+    if (error) {
+      res.send(error);
+    }
+    // Otherwise
+    else {
+      // Find our user and push the new note id into the Article's notes array
+      SavedArticles.findOneAndUpdate({"_id":req.body.id}, { $push: { "notes": doc._id } }, { new: true }, function(err, newdoc) {
+        // Send any errors to the browser
+        if (err) {
+          res.send(err);
+        }
+        // Or send the newdoc to the browser
+        else {
+          // Prepare a query to find all users..
+          SavedArticles.find({})
+            // ..and on top of that, populate the notes (replace the objectIds in the notes array with bona-fide notes)
+            .populate("notes")
+            // Now, execute the query
+            .exec(function(error, doc) {
+              // Send any errors to the browser
+              if (error) {
+                res.send(error);
+              }
+              // Or send the doc to the browser
+              else {
+                //after submitting the note, redirect back to saved articles route.
+                res.redirect("/savedArticles");
+              }
+            });
+        }
+      });
+    }
+  });
+});
 
-})
+app.get("/api/findNote/:id", function(req, res) {
+  console.log(req.params.id);
+  SavedArticles.find({_id: req.params.id}, function(error, doc) {
+    // Send any errors to the browser
+    if (error) {
+      console.log(error);
+    }
+    // Or send the doc to the browser
+    else {
+        console.log("******" + doc[0].notes);
+        Note.find({_id: doc[0].notes}, function(error, doc) {
+        // Send any errors to the browser
+        if (error) {
+          console.log(error);
+        }
+        // Or send the doc to the browser
+        else {
+          res.json(doc);
+        }
+      });
+    }
+  });
+});
 // Listen on port 3000
 app.listen(3000, function() {
   console.log("App running on port 3000!");

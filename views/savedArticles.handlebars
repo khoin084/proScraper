@@ -1,23 +1,30 @@
-<h1 class="jumbotron text-center">Scrape your News!</h1>
+<h1 class="jumbotron text-center" style="background-color:lightsalmon">
+  Scrape your News!
+</h1>
 
 <div class="container">
-  <div class="row">
     {{#each stories}}
-      <div class="well">
-        <div style="background-color:cyan">
+      <div class="row well">
+        <div class="col-sm-9" style="background-color:cyan">
           {{this.title}}
-          <button class="btn btn-info" data-id="{{this._id}}">
+          <br>
+          <a href={{this.link}}>{{this.link}}</a>
+        </div>
+        <div class="col-sm-3">
+          <button class="btn btn-sm btn-info" data-id="{{this._id}}">
             Add Note
           </button>
-          <button class="btn btn-danger" data-id="{{this._id}}">
+          <button class="btn btn-sm btn-danger" data-id="{{this._id}}">
             Delete
           </button>
+          {{#if this.notes}}
+            <button class="btn btn-sm btn-secondary" data-id="{{this._id}}">
+              View Notes
+            </button>
+          {{/if}}
         </div>
-        <br>
-        <a href={{this.link}}>{{this.link}}</a>
-      </div>
-    {{/each}}
-  </div>
+      </div> 
+    {{/each}} 
 </div>
 
 

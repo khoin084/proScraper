@@ -22,23 +22,38 @@
         </nav>
       </div>
 		{{{ body }}}
-		<button id="myBtn" href="/api/scrapedNews" value="101">
-			Open Modal
-		</button>
-		
+			
+		</div>	
 		<!-- The Note Modal -->
 		<div id="noteModal" class="modal">
 			<!-- Modal content -->
 			<div class="modal-content">
 				<span class="close" id="closeIt">&times;</span>
-				<form id="noteArea">
-					<div class="form-group">
+				<form id="noteArea" method="POST" action="/api/addNote">
+					<div class="form-group" id="insertArticleId">
 						<label> Notes </label>
 						<input type="text" class="form-control"
-						placeholder="Add Your Notes" name="name">
+						placeholder="Add Your Notes Here..." name="notes">
+						<label> Article Id </label>
+						<input type="text" class="form-control" id="myNote"
+						placeholder="ID of the specified article..." name="id">
 					</div>
 					<button type="submit" class="btn btn-success"> Submit </button>
 				</form>
+			</div>
+		</div>
+
+		<!-- The Note Modal -->
+		<div id="displayNoteModal" class="modal">
+			<!-- Modal content -->
+			<div class="modal-content" id="placeNotes">
+				<span class="close" id="closeItAgain">&times;</span>
+				<h1> Your Notes </h1>
+				<div class="jumbotron" id="jumboArea" style="background-color:pink">
+					
+						<!--display your notes here.--> 
+					
+				</div>
 			</div>
 		</div>
 
